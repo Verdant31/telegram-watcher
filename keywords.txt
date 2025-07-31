@@ -1,6 +1,7 @@
-# Palavras-chave para monitoramento de promoções
-# Uma palavra-chave por linha
-# Linhas que começam com # são comentários
+# Configuração de Grupos e Palavras-chave
+# Formato: [NOME_DO_GRUPO] seguido pelas palavras-chave (uma por linha)
+# Apenas grupos listados aqui serão monitorados
 
+[Ofertas adrenaline]
 ssd
 34"

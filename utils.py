@@ -69,25 +69,43 @@ def insert_chat_id_into_env(chat_id):
 
 
 def load_keywords():
-    """Carrega palavras-chave do arquivo keywords.txt"""
+    """Carrega palavras-chave do arquivo keywords.txt organizadas por grupos"""
     keywords_file = "keywords.txt"
-    keywords = []
+    groups_keywords = {}
+    current_group = None
+
     with open(keywords_file, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#'):
-                keywords.append(line.lower())
+
+            if not line or line.startswith('#'):
+                continue
+            if line.startswith('[') and line.endswith(']'):
+                current_group = line[1:-1]  # Remove os colchetes
+                groups_keywords[current_group] = []
+                continue
+            if current_group:
+                groups_keywords[current_group].append(line.lower())
+
+    total_keywords = sum(len(words) for words in groups_keywords.values())
     print(
-        f"✅ Carregadas {len(keywords)} palavras-chave de {keywords_file}")
-    return keywords
+        f"✅ Carregados {len(groups_keywords)} grupos com {total_keywords} palavras-chave")
+
+    for group, words in groups_keywords.items():
+        print(f"   📁 {group}: {len(words)} palavras")
+
+    return groups_keywords
 
 
-def check_keywords_in_message(message, keywords):
-    """Verifica se alguma palavra-chave está presente na mensagem"""
+def check_keywords_in_message(message, keywords_for_group):
+    """Verifica se alguma palavra-chave está presente na mensagem para um grupo específico"""
+    if not keywords_for_group:
+        return []
+
     message_lower = message.lower()
     found_keywords = []
 
-    for keyword in keywords:
+    for keyword in keywords_for_group:
         if keyword in message_lower:
             found_keywords.append(keyword)
 
