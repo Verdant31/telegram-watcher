@@ -183,4 +183,11 @@ def main():
 
 
 if __name__ == "__main__":
+    if os.path.exists('.env'):
+        with open('.env', 'r', encoding='utf-8') as f:
+            content = f.read()
+            if 'TELEGRAM_NOTIFICATION_CHAT_ID=' in content and 'TELEGRAM_BOT_TOKEN=' in content:
+                print("✓ Configuração de bot já realizada.")
+                exit(0)
+
     main()

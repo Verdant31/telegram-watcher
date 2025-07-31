@@ -18,4 +18,4 @@ WORKDIR /app
 COPY . .
 
 # Set the default command
-CMD ["python3", "monitor.py"]
+CMD ["python3", "setup_group.py", "&&", "python3", "monitor.py"]
