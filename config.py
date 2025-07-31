@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 from telethon import TelegramClient
-from twilio.rest import Client
 
 
 class MonitorConfig:
@@ -16,20 +15,13 @@ class MonitorConfig:
         self.api_hash = str(os.getenv("TELEGRAM_API_HASH"))
         self.session_file = os.getenv(
             "TELEGRAM_SESSION", "session_data/monitor")
-        self.twilio_sid = str(os.getenv("TWILIO_SID"))
-        self.twilio_token = str(os.getenv("TWILIO_TOKEN"))
-        self.twilio_from = str(os.getenv("TWILIO_FROM_NUMBER"))
-        self.whatsapp_to = str(os.getenv("WHATSAPP_TO_NUMBER"))
+        self.notification_chat_id = os.getenv("TELEGRAM_NOTIFICATION_CHAT_ID")
 
     def _validate_env_vars(self):
         """Verifica se todas as variáveis de ambiente foram carregadas"""
         required_vars = [
             ("TELEGRAM_API_ID", self.api_id),
             ("TELEGRAM_API_HASH", self.api_hash),
-            ("TWILIO_SID", self.twilio_sid),
-            ("TWILIO_TOKEN", self.twilio_token),
-            ("TWILIO_FROM_NUMBER", self.twilio_from),
-            ("WHATSAPP_TO_NUMBER", self.whatsapp_to),
             ("TELEGRAM_SESSION", self.session_file)
         ]
 
@@ -42,12 +34,12 @@ class MonitorConfig:
             raise ValueError(
                 f"❌ Variáveis de ambiente não encontradas: {', '.join(missing_vars)}")
 
+        # Validação especial para TELEGRAM_NOTIFICATION_CHAT_ID (pode ser vazia inicialmente)
+        if not self.notification_chat_id:
+            print("⚠️  TELEGRAM_NOTIFICATION_CHAT_ID não configurado. Use o comando /get_chat_id para obter seu ID.")
+
         print("✅ Todas as variáveis de ambiente carregadas com sucesso!")
 
     def create_telegram_client(self):
         """Cria e retorna o cliente do Telegram"""
         return TelegramClient(self.session_file, self.api_id, self.api_hash)
-
-    def create_twilio_client(self):
-        """Cria e retorna o cliente do Twilio"""
-        return Client(self.twilio_sid, self.twilio_token)

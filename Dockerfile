@@ -9,7 +9,7 @@ RUN yum update -y && \
 
 # Install required Python libraries
 RUN pip3 install --upgrade pip && \
-    pip3 install telethon boto3 twilio python-dotenv
+    pip3 install telethon boto3 python-dotenv
 
 # Create working directory
 WORKDIR /app

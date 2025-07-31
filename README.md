@@ -1,12 +1,12 @@
-# Telegram Watch
+# Telegram Deal Monitor
 
-A Python application that monitors Telegram messages for specific keywords and sends WhatsApp notifications via Twilio when promotional deals are detected.
+A Python application that monitors Telegram messages for specific keywords and sends notifications via Telegram when promotional deals are detected.
 
 ## Features
 
 - Real-time Telegram message monitoring
 - Keyword-based deal detection
-- WhatsApp notifications via Twilio API
+- Telegram notifications (no external APIs required!)
 - Customizable keyword list
 - Secure environment variable configuration
 - Docker support for easy deployment
@@ -25,16 +25,19 @@ pip install -r requirements.txt
 ```
 
 3. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Fill in your actual credentials:
+   - Copy `.env.example` to `.env` or create a new `.env` file
+   - Fill in your actual credentials (see configuration section)
 
+4. Get your Telegram Chat ID:
 ```bash
-cp .env.example .env
+python get_chat_id.py
 ```
+   - Send any message to the bot (‼️‼️You can also send a message to your 'Saved Messages' chat on Telegram and use it to receive your notifications.)
+   - Copy the Chat ID and add it to your `.env` file
 
-4. Configure keywords in `keywords.txt`
+5. Configure keywords in `keywords.txt`
 
-5. Run the monitor:
+6. Run the monitor:
 ```bash
 python monitor.py
 ```
@@ -48,10 +51,8 @@ Create a `.env` file with the following variables:
 - `TELEGRAM_API_ID`: Telegram API ID (get from https://my.telegram.org)
 - `TELEGRAM_API_HASH`: Telegram API Hash
 - `TELEGRAM_SESSION`: Session file path (default: session_data/monitor)
-- `TWILIO_SID`: Twilio Account SID
-- `TWILIO_TOKEN`: Twilio Authentication Token
-- `TWILIO_FROM_NUMBER`: Your Twilio WhatsApp number (format: whatsapp:+1234567890)
-- `WHATSAPP_TO_NUMBER`: Destination WhatsApp number (format: whatsapp:+1234567890)
+- `TELEGRAM_NOTIFICATION_CHAT_ID`: Your Telegram Chat ID (get using get_chat_id.py)
+
 
 ### Keywords Configuration
 
@@ -67,36 +68,56 @@ graphics card
 laptop
 sale
 discount
+promoção
+oferta
+desconto
 ```
 
-## How to Get Credentials
+## How to Get Telegram API Credentials
 
-### Telegram API Credentials
 1. Visit https://my.telegram.org
 2. Log in with your phone number
 3. Go to "API development tools"
 4. Create a new application
 5. Note down the `api_id` and `api_hash`
 
-### Twilio Credentials
-1. Create an account at https://www.twilio.com
-2. Access the Console Dashboard
-3. Note down the `Account SID` and `Auth Token`
-4. Set up a WhatsApp Business API number
-
 ## Project Structure
 
 ```
 telegram-watch/
-├── config.py           # Configuration and environment setup
-├── monitor.py          # Main monitoring application
-├── utils.py            # Utility functions for keyword processing
-├── keywords.txt        # Keywords to monitor
-├── requirements.txt    # Python dependencies
-├── Dockerfile          # Docker container configuration
-├── docker-compose.yml  # Docker Compose setup
-└── session_data/       # Telegram session storage
+├── config.py              # Configuration and environment setup
+├── monitor.py             # Main monitoring application
+├── get_my_chat_id.py      # Simple script to get your Chat ID
+├── get_chat_id.py         # Alternative Chat ID helper (interactive)
+├── test_notification.py   # Test script to verify notifications
+├── utils.py               # Utility functions for keyword processing
+├── keywords.txt           # Keywords to monitor
+├── requirements.txt       # Python dependencies
+├── Dockerfile             # Docker container configuration
+├── docker-compose.yml     # Docker Compose setup
+├── .env.example           # Environment variables template
+└── session_data/          # Telegram session storage
 ```
+
+## How It Works
+
+1. The application connects to Telegram using the Telethon library
+2. It monitors incoming messages in real-time
+3. Each message is checked against the keywords in `keywords.txt`
+4. When a match is found, a Telegram notification is sent to your configured Chat ID
+5. The notification includes the matched keywords and the original message
+
+## Available Commands
+
+
+When running the test script, you can use:
+
+- `/test`: Send a test notification to verify the system is working
+
+### Testing notification
+- Run `python test_notification.py` and send `/test` in the bot chat to verify setup
+- Check if the Chat ID in `.env` matches the one from `get_my_chat_id.py`
+- Verify your Telegram API credentials are correct
 
 ## Docker Deployment
 
@@ -111,20 +132,19 @@ docker-compose run --rm telegram-watcher
 
 **Security Note**: The `docker-compose.yml` uses `env_file: .env` to load environment variables securely. Never put credentials directly in docker-compose.yml!
 
-## How It Works
-
-1. The application connects to Telegram using the Telethon library
-2. It monitors incoming messages in real-time
-3. Each message is checked against the keywords in `keywords.txt`
-4. When a match is found, a WhatsApp notification is sent via Twilio
-5. The notification includes the matched keywords and the original message
-
 ## Dependencies
 
 - `telethon`: Telegram client library
-- `twilio`: Twilio API client
 - `python-dotenv`: Environment variable management
+
+## Advantages over the Previous Version
+
+- ✅ **Free**: No costs - uses Telegram for notifications
+- ✅ **Simpler**: Fewer dependencies and configuration steps
+- ✅ **More reliable**: Direct Telegram API without external service dependencies
+- ✅ **Real-time**: Instant notifications through Telegram
+- ✅ **Easy testing**: Dedicated test scripts to verify functionality
 
 ## License
 
-This project is for educational and personal use. Please respect Telegram's and Twilio's terms of service.
+This project is for educational and personal use. Please respect Telegram's terms of service.
