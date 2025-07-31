@@ -1,0 +1,68 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Docker compose with credentials (use docker-compose.yml.example as template)
+docker-compose.override.yml
+
+# Session data
+session_data/
+*.session
+
+# Logs
+*.log
+logs/
+
+# Keywords (uncomment if you want to keep your keywords private)
+# keywords.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

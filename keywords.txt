@@ -1,0 +1,6 @@
+# Palavras-chave para monitoramento de promoções
+# Uma palavra-chave por linha
+# Linhas que começam com # são comentários
+
+ssd
+34"

@@ -1,0 +1,11 @@
+version: '3'
+services:
+  telegram-watcher:
+    build: .
+    volumes:
+      - ./session_data:/app/session_data  # persistent login
+      - .:/app
+    env_file:
+      - .env
+    tty: true  # to allow interactive login
+    stdin_open: true  # keep STDIN open even if not attached
