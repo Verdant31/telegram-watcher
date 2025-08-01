@@ -6,32 +6,39 @@ from config import MonitorConfig
 def update_env_variable(variable_name, value):
     """Atualiza ou adiciona uma variável no arquivo .env"""
     env_path = '.env'
+    try:
+        if not os.path.exists(env_path):
+            if os.path.exists('.env.example'):
+                with open('.env.example', 'r', encoding='utf-8') as f:
+                    content = f.read()
+                with open(env_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print(f"📄 Arquivo .env criado a partir do .env.example")
+            else:
+                with open(env_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{variable_name}=\n")
+                print(
+                    f"📄 Arquivo .env criado com variável inicial: {variable_name}")
 
-    if not os.path.exists(env_path):
-        if os.path.exists('.env.example'):
-            with open('.env.example', 'r', encoding='utf-8') as f:
-                content = f.read()
-            with open(env_path, 'w', encoding='utf-8') as f:
-                f.write(content)
+        with open(env_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        pattern = rf'{variable_name}=.*'
+        replacement = f'{variable_name}={value}'
+
+        if re.search(pattern, content):
+            content = re.sub(pattern, replacement, content)
         else:
-            with open(env_path, 'w', encoding='utf-8') as f:
-                f.write(f"{variable_name}=\n")
+            content += f'\n{replacement}\n'
 
-    with open(env_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+        with open(env_path, 'w', encoding='utf-8') as f:
+            f.write(content)
 
-    pattern = rf'{variable_name}=.*'
-    replacement = f'{variable_name}={value}'
+        print(f"✅ Arquivo .env atualizado com {variable_name}: {value}")
 
-    if re.search(pattern, content):
-        content = re.sub(pattern, replacement, content)
-    else:
-        content += f'\n{replacement}\n'
-
-    with open(env_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-
-    print(f"Arquivo .env atualizado com {variable_name}: {value}")
+    except Exception as e:
+        print(f"❌ Erro ao atualizar arquivo .env: {e}")
+        raise
 
 
 def insert_chat_id_into_env(chat_id):

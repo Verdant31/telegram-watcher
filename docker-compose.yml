@@ -4,7 +4,13 @@ services:
     build: .
     volumes:
       - ./session_data:/app/session_data  # persistent login
-      - .:/app
+      - ./.env:/app/.env  # mount .env file specifically
+      - ./keywords.txt:/app/keywords.txt
+      - ./config.py:/app/config.py
+      - ./utils.py:/app/utils.py
+      - ./setup_group.py:/app/setup_group.py
+      - ./monitor.py:/app/monitor.py
+      - ./test_notification.py:/app/test_notification.py
     env_file:
       - .env
     tty: true  # to allow interactive login
