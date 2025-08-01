@@ -1,12 +1,32 @@
 from telethon import events
 from config import MonitorConfig
 from utils import load_keywords, check_keywords_in_message, send_telegram_notification
+import signal
+import sys
 
 config = MonitorConfig()
 config._validate_env_vars()
 
 groups_keywords = load_keywords()
 client = config.create_telegram_client()
+
+
+def signal_handler(sig, frame):
+    """Handler para fechar conexões ao receber sinal de interrupção"""
+    print("\n🔄 Encerrando monitor e fechando conexões...")
+    import asyncio
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(config.close_bot_client())
+        loop.close()
+    except:
+        pass
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 
 @client.on(events.NewMessage())
@@ -79,4 +99,16 @@ if __name__ == "__main__":
         print("Chat ID nao configurado. Execute 'python setup_group.py' para configurar automaticamente.")
 
     print("Aguardando mensagens...")
-    client.run_until_disconnected()
+    try:
+        client.run_until_disconnected()
+    except KeyboardInterrupt:
+        print("\n🔄 Encerrando monitor...")
+    finally:
+        import asyncio
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(config.close_bot_client())
+            loop.close()
+        except:
+            pass
