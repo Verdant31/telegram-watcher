@@ -73,10 +73,6 @@ async def handler(event):
             print(f"[NOTIFICATION SENT] Enviado")
         else:
             print(f"[NOTIFICATION FAILED] Falhou")
-    else:
-        print(
-            f"[NO MATCH] Grupo: {matched_group} - Nenhuma palavra-chave encontrada")
-        print(f"[MESSAGE] {msg[:100]}{'...' if len(msg) > 100 else ''}")
 
 if __name__ == "__main__":
     client.start()
