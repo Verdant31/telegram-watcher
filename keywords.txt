@@ -5,3 +5,6 @@
 [Ofertas adrenaline]
 ssd
 34"
+
+[xet das promoções]
+windfree

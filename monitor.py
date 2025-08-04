@@ -3,18 +3,24 @@ from config import MonitorConfig
 from utils import load_keywords, check_keywords_in_message, send_telegram_notification
 import signal
 import sys
+import asyncio
+from telethon import TelegramClient
 
 config = MonitorConfig()
 config._validate_env_vars()
 
 groups_keywords = load_keywords()
-client = config.create_telegram_client()
+
+
+user_client = TelegramClient(config.session_file,
+                             config.api_id, config.api_hash)
+bot_client = TelegramClient(config.bot_session_file,
+                            config.api_id, config.api_hash)
 
 
 def signal_handler(sig, frame):
     """Handler para fechar conexões ao receber sinal de interrupção"""
     print("\n🔄 Encerrando monitor e fechando conexões...")
-    import asyncio
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -29,12 +35,11 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 
-@client.on(events.NewMessage())
+@user_client.on(events.NewMessage())
 async def handler(event):
     """Handler principal para monitorar mensagens"""
     msg = event.message.message
 
-    # Ignora comandos do bot
     if msg.startswith('/'):
         return
 
@@ -52,7 +57,8 @@ async def handler(event):
 
     if not matched_group:
         return
-    print(f"🔍 Grupo: {matched_group} - {chat_title}, Message: {msg}")
+    print(
+        f"🔍 Grupo: {matched_group} - {chat_title}, Message: {msg.split(chr(10))[0]}")
     found_keywords = check_keywords_in_message(msg, keywords_to_check)
 
     if found_keywords:
@@ -64,6 +70,7 @@ async def handler(event):
         notification_message = f"🎯 Grupo: {matched_group}\n📝 Palavras-chave: {keywords_text}"
 
         success = await send_telegram_notification(
+            bot_client,
             config.notification_chat_id,
             notification_message,
             msg
@@ -74,8 +81,10 @@ async def handler(event):
         else:
             print(f"[NOTIFICATION FAILED] Falhou")
 
-if __name__ == "__main__":
-    client.start()
+
+async def main():
+    await user_client.start()  # type: ignore
+    await bot_client.start()  # type: ignore
 
     total_groups = len(groups_keywords)
     total_keywords = sum(len(words) for words in groups_keywords.values())
@@ -96,15 +105,15 @@ if __name__ == "__main__":
 
     print("Aguardando mensagens...")
     try:
-        client.run_until_disconnected()
+        tasks = [
+            user_client.run_until_disconnected(),
+            bot_client.run_until_disconnected(),
+        ]
+
+        await asyncio.gather(*tasks)  # type: ignore
     except KeyboardInterrupt:
         print("\n🔄 Encerrando monitor...")
-    finally:
-        import asyncio
-        try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(config.close_bot_client())
-            loop.close()
-        except:
-            pass
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

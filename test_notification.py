@@ -2,6 +2,7 @@
 """
 Script para testar se as notificações do Telegram estão funcionando
 """
+from telethon import TelegramClient
 from config import MonitorConfig
 from utils import send_telegram_notification, load_keywords
 
@@ -9,12 +10,15 @@ from utils import send_telegram_notification, load_keywords
 async def test_notification():
     """Testa o envio de notificação para o grupo configurado"""
     config = MonitorConfig()
+    bot_client = TelegramClient(config.bot_session_file,
+                                config.api_id, config.api_hash)
     if (not config.api_id or not config.api_hash):
         print(
             "❌ Variáveis de ambiente TELEGRAM_API_ID e TELEGRAM_API_HASH não configuradas.")
         return
 
     try:
+        await bot_client.start()  # type: ignore
         print("Conectando ao Telegram...")
 
         if not config.notification_chat_id:
@@ -28,20 +32,16 @@ async def test_notification():
         )) if groups_keywords else "Nenhum grupo configurado"
         print("Enviando mensagem de teste para o grupo...")
 
-        success = await send_telegram_notification(
+        await send_telegram_notification(
+            bot_client,
             config.notification_chat_id,
             f"🧪 Teste do sistema de notificacoes\n📁 Grupos monitorados: {groups_info}",
             "Esta e uma mensagem de teste para verificar se o sistema esta funcionando corretamente."
         )
 
-        if success:
-            print("Mensagem de teste enviada com sucesso!")
-            print("Verifique o grupo 'Notificacoes de Ofertas' no Telegram")
-            return True
-        else:
-            print("Falha ao enviar mensagem de teste")
-            return False
-
+        print("Mensagem de teste enviada com sucesso!")
+        print("Verifique o grupo 'Notificacoes de Ofertas' no Telegram")
+        return True
     except Exception as e:
         print(f"Erro durante o teste: {e}")
         return False

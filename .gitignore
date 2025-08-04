@@ -52,6 +52,7 @@ ENV/
 .coverage
 htmlcov/
 .tox/
+test_database_fix.py
 
 # IDE
 .vscode/

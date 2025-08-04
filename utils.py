@@ -119,11 +119,9 @@ def check_keywords_in_message(message, keywords_for_group):
     return found_keywords
 
 
-async def send_telegram_notification(chat_id, message, original_message=None):
+async def send_telegram_notification(bot_client, chat_id, message, original_message=None):
     """Envia uma notificação via Telegram"""
     try:
-        config = MonitorConfig()
-
         if not chat_id:
             print("Chat ID não configurado. Não foi possível enviar notificação.")
             return False
@@ -133,13 +131,9 @@ async def send_telegram_notification(chat_id, message, original_message=None):
         if original_message:
             notification_text += f"\n\n💬 Mensagem original:\n{original_message[:500]}{'...' if len(original_message) > 500 else ''}"
 
-        # Usa o método seguro para enviar notificação
-        success = await config.send_notification_safe(int(chat_id), notification_text)
-        
-        if success:
-            print(f"✅ Notificação enviada via Telegram para chat ID: {chat_id}")
-        
-        return success
+        await bot_client.send_message(int(chat_id), notification_text)
+        print(f"✅ Notificação enviada via Telegram para chat ID: {chat_id}")
+        return True
     except Exception as e:
         print(f"❌ Erro ao enviar notificação via Telegram: {e}")
         return False
