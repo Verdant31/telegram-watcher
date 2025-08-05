@@ -24,7 +24,6 @@ def signal_handler(sig, frame):
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(config.close_bot_client())
         loop.close()
     except:
         pass
@@ -84,7 +83,7 @@ async def handler(event):
 
 async def main():
     await user_client.start()  # type: ignore
-    await bot_client.start()  # type: ignore
+    await bot_client.start(bot_token=config.bot_token)  # type: ignore
 
     total_groups = len(groups_keywords)
     total_keywords = sum(len(words) for words in groups_keywords.values())
