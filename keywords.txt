@@ -3,8 +3,7 @@
 # Apenas grupos listados aqui serão monitorados
 
 [Ofertas adrenaline]
-ssd
-34"
+windfree
 
 [xet das promoções]
 windfree
