@@ -3,7 +3,7 @@
 # Apenas grupos listados aqui serão monitorados
 
 [Ofertas adrenaline]
-windfree
+5070
 
-[xet das promoções]
-windfree
+[Fraguas84 Promoções]
+5070
