@@ -1,10 +1,11 @@
-version: '3'
+version: "3"
 services:
   telegram-watcher:
     build: .
+    restart: always
     volumes:
-      - ./session_data:/app/session_data  # persistent login
-      - ./.env:/app/.env  # mount .env file specifically
+      - ./session_data:/app/session_data # persistent login
+      - ./.env:/app/.env # mount .env file specifically
       - ./keywords.txt:/app/keywords.txt
       - ./config.py:/app/config.py
       - ./utils.py:/app/utils.py
@@ -13,5 +14,5 @@ services:
       - ./test_notification.py:/app/test_notification.py
     env_file:
       - .env
-    tty: true  # to allow interactive login
-    stdin_open: true  # keep STDIN open even if not attached
+    tty: true # to allow interactive login
+    stdin_open: true # keep STDIN open even if not attached
